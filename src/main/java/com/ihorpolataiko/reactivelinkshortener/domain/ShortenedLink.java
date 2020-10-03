@@ -2,9 +2,12 @@ package com.ihorpolataiko.reactivelinkshortener.domain;
 
 import lombok.Data;
 
-@Data
-public class ShortenLink {
+import javax.validation.constraints.NotNull;
 
+@Data
+public class ShortenedLink {
+
+    @NotNull(message = "Link must be specified")
     private final String shortenLink;
 
 }

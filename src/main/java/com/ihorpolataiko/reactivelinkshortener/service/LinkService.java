@@ -1,9 +1,10 @@
 package com.ihorpolataiko.reactivelinkshortener.service;
 
 import com.ihorpolataiko.reactivelinkshortener.domain.OriginalLink;
-import com.ihorpolataiko.reactivelinkshortener.domain.ShortenLink;
+import com.ihorpolataiko.reactivelinkshortener.domain.ShortenedLink;
 import com.ihorpolataiko.reactivelinkshortener.repository.LinkRepository;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -11,22 +12,27 @@ import reactor.core.publisher.Mono;
 public class LinkService {
 
     public static final int SHORTEN_LINK_LENGTH = 7;
+
     private final LinkRepository linkRepository;
 
-    public LinkService(LinkRepository linkRepository) {
+    private final String appBaseUrl;
+
+    public LinkService(LinkRepository linkRepository, @Value("${app.baseUrl}") String appBaseUrl) {
         this.linkRepository = linkRepository;
+        this.appBaseUrl = appBaseUrl;
     }
 
-    public Mono<ShortenLink> convertToShorten(OriginalLink originalLink) {
+    public Mono<ShortenedLink> convertToShorten(OriginalLink originalLink) {
 
-        ShortenLink shortenLink = new ShortenLink(RandomStringUtils.random(SHORTEN_LINK_LENGTH));
+        ShortenedLink shortenedLink = new ShortenedLink(RandomStringUtils.randomAlphabetic(SHORTEN_LINK_LENGTH));
 
-        return linkRepository.save(originalLink, shortenLink);
+        return linkRepository.save(originalLink, shortenedLink)
+                .map(shorten -> new ShortenedLink(appBaseUrl + shorten.getShortenLink()));
     }
 
-    public Mono<OriginalLink> convertToOriginal(ShortenLink shortenLink) {
+    public Mono<OriginalLink> convertToOriginal(ShortenedLink shortenedLink) {
 
-        return linkRepository.findByShortenLink(shortenLink);
+        return linkRepository.findByShortenLink(shortenedLink);
     }
 
 }

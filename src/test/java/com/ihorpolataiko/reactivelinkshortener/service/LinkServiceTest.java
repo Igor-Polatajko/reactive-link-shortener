@@ -1,15 +1,10 @@
 package com.ihorpolataiko.reactivelinkshortener.service;
 
 import com.ihorpolataiko.reactivelinkshortener.domain.OriginalLink;
-import com.ihorpolataiko.reactivelinkshortener.domain.ShortenLink;
+import com.ihorpolataiko.reactivelinkshortener.domain.ShortenedLink;
 import com.ihorpolataiko.reactivelinkshortener.repository.LinkRepository;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -17,17 +12,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class LinkServiceTest {
 
-    @Mock
-    private LinkRepository linkRepository;
+    private static final String APP_BASE_URL = "https://app-base-url/";
 
-    @InjectMocks
-    private LinkService linkService;
+    private LinkRepository linkRepository = mock(LinkRepository.class);
 
-    @Captor
-    private ArgumentCaptor<ShortenLink> shortenLinkArgumentCaptor;
+    private LinkService linkService = new LinkService(linkRepository, APP_BASE_URL);
+
+    private ArgumentCaptor<ShortenedLink> shortenLinkArgumentCaptor = ArgumentCaptor.forClass(ShortenedLink.class);
 
     @Test
     void convertToShorten() {
@@ -37,13 +30,15 @@ class LinkServiceTest {
         when(linkRepository.save(eq(originalLink), any()))
                 .thenAnswer(invocation -> Mono.just(invocation.getArgument(1)));
 
-        Mono<ShortenLink> actualShortenLink = linkService.convertToShorten(originalLink);
+        Mono<ShortenedLink> actualShortenLink = linkService.convertToShorten(originalLink);
 
         verify(linkRepository, only()).save(eq(originalLink), shortenLinkArgumentCaptor.capture());
 
-        ShortenLink expectedShortenLink = shortenLinkArgumentCaptor.getValue();
+        ShortenedLink expectedShortenedLink = new ShortenedLink(
+                APP_BASE_URL + shortenLinkArgumentCaptor.getValue().getShortenLink()
+        );
 
-        assertEquals(expectedShortenLink, actualShortenLink.block());
+        assertEquals(expectedShortenedLink, actualShortenLink.block());
 
     }
 
@@ -52,15 +47,15 @@ class LinkServiceTest {
 
         OriginalLink expectedOriginal = new OriginalLink("/original/link");
 
-        ShortenLink shortenLink = new ShortenLink("/shorten");
+        ShortenedLink shortenedLink = new ShortenedLink("/shorten");
 
-        when(linkRepository.findByShortenLink(shortenLink)).thenReturn(Mono.just(expectedOriginal));
+        when(linkRepository.findByShortenLink(shortenedLink)).thenReturn(Mono.just(expectedOriginal));
 
-        StepVerifier.create(linkService.convertToOriginal(shortenLink))
+        StepVerifier.create(linkService.convertToOriginal(shortenedLink))
                 .expectNext(expectedOriginal)
                 .verifyComplete();
 
-        verify(linkRepository, only()).findByShortenLink(shortenLink);
+        verify(linkRepository, only()).findByShortenLink(shortenedLink);
 
     }
 
