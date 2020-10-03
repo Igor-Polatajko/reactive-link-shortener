@@ -17,13 +17,13 @@ public class LinkRepository {
         this.redisTemplate = redisTemplate;
     }
 
-    Mono<ShortenLink> save(OriginalLink originalLink, ShortenLink shortenLink) {
+    public Mono<ShortenLink> save(OriginalLink originalLink, ShortenLink shortenLink) {
         return redisTemplate.opsForValue()
                 .set(shortenLink.getShortenLink(), originalLink.getOriginalLink())
                 .map(__ -> shortenLink);
     }
 
-    Mono<OriginalLink> findByShortenLink(ShortenLink shortenLink) {
+    public Mono<OriginalLink> findByShortenLink(ShortenLink shortenLink) {
         return redisTemplate.opsForValue()
                 .get(shortenLink.getShortenLink())
                 .map(OriginalLink::new);

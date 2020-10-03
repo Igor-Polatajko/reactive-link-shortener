@@ -14,7 +14,7 @@ class LinkRepositoryTest extends AbstractContainerBaseTest {
     private LinkRepository linkRepository;
 
     @Test
-    public void saveAndThenFindByShortenLink() {
+    void saveAndThenFindByShortenLink() {
 
         OriginalLink originalLink = new OriginalLink("/original/link");
         ShortenLink shortenLink = new ShortenLink("/shorten");
