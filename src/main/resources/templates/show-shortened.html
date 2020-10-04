@@ -1,0 +1,27 @@
+<div th:replace="./include/header"></div>
+
+<div class="row h-100">
+    <div class="col-md-6 m-auto px-4 pt-4 pb-2 rounded bg-light">
+        <div class="input-group">
+            <label for="shortenedLink" class="h5 mr-4 input-group-text">Shortened link</label>
+            <input type="text" th:value="${shortenedLink}" class="form-control" id="shortenedLink" readonly>
+            <div class="btn btn-light" onclick="copyToClipboard()" id="copy-button">Copy</div>
+        </div>
+        <div class="col-md-12 mt-3 d-flex justify-content-center">
+            <a href="/ui" class="h 5">Another link</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyToClipboard() {
+        let inputElement = $("#shortenedLink");
+        inputElement.select();
+        inputElement[0].setSelectionRange(0, 99999);
+        document.execCommand("copy");
+
+        $("#copy-button").text("Copied!");
+    }
+</script>
+
+<div th:replace="./include/footer"></div>

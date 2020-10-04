@@ -1,0 +1,15 @@
+<div th:replace="./include/header"></div>
+
+<div class="row h-100">
+    <div class="m-auto px-4 pt-4 pb-2 rounded bg-light">
+        <form class="form-inline" method="POST">
+            <div class="form-group mx-sm-3 mb-2">
+                <label for="originalLink" class="sr-only">Enter link</label>
+                <input type="text" class="form-control" id="originalLink" name="originalLink" placeholder="Enter link" required>
+            </div>
+            <button type="submit" class="btn btn-primary mb-2">Shorten</button>
+        </form>
+    </div>
+</div>
+
+<div th:replace="./include/footer"></div>

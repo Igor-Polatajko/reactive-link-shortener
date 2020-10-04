@@ -21,7 +21,7 @@ public class LinkShortenerApiController {
         this.linkService = linkService;
     }
 
-    @PostMapping(value = "/shorten",
+    @PostMapping(value = "/shorten-link",
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<ShortenedLink> convertToShorten(@Validated @RequestBody OriginalLink originalLink) {

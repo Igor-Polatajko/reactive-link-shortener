@@ -41,7 +41,7 @@ class LinkShortenerApiControllerTest {
         when(linkService.convertToShorten(ORIGINAL_LINK)).thenReturn(Mono.just(SHORTEN_LINK));
 
         webTestClient.post()
-                .uri("/shorten")
+                .uri("/shorten-link")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(objectMapper.writeValueAsString(ORIGINAL_LINK)))
                 .exchange()
